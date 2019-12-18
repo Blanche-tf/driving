@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="/style/js/jquery.1.10.1.min.js"></script>
+    <script type="text/javascript">
+        // alert($)
+        $.ajax({
+            url:"/pos/add",
+            success:function (data) {
+                alert("成功")
+            },error:function (XMLHttpRequest) {
+                if (XMLHttpRequest.status==403){
+                    alert("对不起，你没有该权限")
+                }else {
+                    alert("出错了"+XMLHttpRequest.status)
+                }
+            }
+        })
+    </script>
+</head>
+<body>
+</body>
+</html>
