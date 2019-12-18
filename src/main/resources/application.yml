@@ -1,0 +1,70 @@
+# k:空格v
+# 通过垂直对齐来指定层次关系
+# 默认可以不加引号，但有双引号会将其中的转义符进行转义。
+#
+server:
+  port: 8090  #tomcat端口号
+  servlet:
+    #path: /  #前端控制器拦截的路径
+    context-path: /  # 上下文路径 必须以/开头 访问时必须先写上下文路径
+spring:
+  #mvc: #用templates模板不能 配置mvc的前缀后缀
+  # view:
+  #   prefix: /jsp/   #前缀
+  #   suffix: .jsp    #后缀
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver #数据库配置
+    url: jdbc:mysql://127.0.0.1:3306/driving?characterEncoding=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+  jackson:  #日期
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  thymeleaf:
+    encoding: UTF-8
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    cache: false
+  resources: #静态资源的访问
+    static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,classpath:/templates/,file:${upload.path}
+  servlet:
+    #文件大小 MB必须大写
+    #  maxFileSize 是单个文件大小
+    #  maxRequestSize是设置总上传的数据大小
+    multipart:
+      max-file-size: 100000MB       #单个数据的大小
+      max-request-size: 100000MB   #总数据的大小
+      enabled: true             #默认支持文件上传  是否支持 multipart 上传文件
+      file-size-threshold: 0B
+#上传配置
+#默认支持文件上传
+#spring.servlet.multipart.enabled=true
+#上传文件大小配置
+#spring.servlet.multipart.max-file-size=10MB
+#spring.servlet.multipart.max-request-size=10MB
+#spring.datasource.druid.test-on-borrow=true
+#spring.datasource.druid.test-on-return=true
+
+
+
+#分页
+pagehelper:
+  helper-dialect: mysql            # 数据库方言
+  offset-as-page-num: true
+  support-methods-arguments: true  # 方法参数中包含pageNum,pageSize参数时，自动进行分页
+  params: count=coutSql
+  reasonable: true                 # 传递的pageNum>totalpage时，pageNum=totalpage
+
+#通用mapper
+mapper:
+  mappers: tk.mybatis.mapper.common.Mapper     #包
+  identity: mysql                              #自增方式
+  not-empty: true                              #
+  style: normal                                # lastName
+
+
+#mybatis
+mybatis:
+  mapper-locations: classpath:driving/back/mapper/*.xml,classpath:driving/school/mapper/*.xml,classpath:driving/treasure/mapper/*.xml  #xml
+  type-aliases-package: driving.entity              #别名，配置类在mapper里面写sql语句可以直接写该包的别名也就是实体类的名称
