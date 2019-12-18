@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 56.3 (81716) - https://sketch.com -->
+    <title>左备份</title>
+    <desc>Created with Sketch.</desc>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="驾校帮首页备份-7" transform="translate(-210.000000, -177.000000)" fill="#FFFFFF" fill-rule="nonzero">
+            <g id="左备份" transform="translate(226.000000, 193.000000) scale(-1, 1) translate(-226.000000, -193.000000) translate(210.000000, 177.000000)">
+                <path d="M16,31 C7.75,31 1,24.25 1,16 C1,7.75 7.75,1 16,1 C24.25,1 31,7.75 31,16 C31,24.25 24.25,31 16,31 Z" id="路径" opacity="0.200000003"></path>
+                <polygon id="路径" opacity="0.699999988" points="14.0511442 9 13.0500743 9.99579452 19.0064513 16.0212088 13 21.9959116 13.9925908 23 21 16.0294223"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

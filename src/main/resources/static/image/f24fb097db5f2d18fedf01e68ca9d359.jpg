@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 56.3 (81716) - https://sketch.com -->
+    <title>自</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#ECA971" offset="0%"></stop>
+            <stop stop-color="#D86842" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="svg图标" transform="translate(-385.000000, -46.000000)">
+            <g id="Group-31" transform="translate(385.000000, 46.000000)">
+                <g id="自">
+                    <g id="高">
+                        <g id="Group-28-Copy-3">
+                            <rect id="Rectangle-15" fill="url(#linearGradient-1)" x="0" y="0" width="16" height="16" rx="1"></rect>
+                            <path d="M12.3747552,3.59303591 L12.3747552,14 L11.4215452,14 L11.4215452,13.1904244 L4.55321001,13.1904244 L4.55321001,14 L3.6,14 L3.6,3.59303591 L6.39434168,3.59303591 C6.68161045,3.07072905 6.90359086,2.5484222 7.03416757,2 L7.98737758,2.13057671 C7.8437432,2.65288357 7.63482046,3.14907508 7.37366703,3.59303591 L12.3747552,3.59303591 Z M4.55321001,12.289445 L11.4215452,12.289445 L11.4215452,10.1610446 L4.55321001,10.1610446 L4.55321001,12.289445 Z M4.55321001,9.2992383 L11.4215452,9.2992383 L11.4215452,7.30141458 L4.55321001,7.30141458 L4.55321001,9.2992383 Z M4.55321001,6.43960827 L11.4215452,6.43960827 L11.4215452,4.49401523 L4.55321001,4.49401523 L4.55321001,6.43960827 Z" id="自" fill="#FFFFFF"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
