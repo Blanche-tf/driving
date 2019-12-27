@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>部门</title>
+
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <script src="/layuiadmin/layui/layui.js"></script>
+    <script src="/js/jquery-3.1.1.js"></script>
+    <script type="text/javascript">
+        //使用表格
+        layui.use('table', function () {
+            var table = layui.table;
+            table.render({
+                elem: '#cityInfo' //根基id获取元素
+                , height: 450
+                , url: '/back_city/findAll' //路径
+                , toolbar: '#toolbarDemo'
+                , limit: 10                               //每页显示条数 默认是10
+                , limits: [10, 15, 20]                      //分页下拉框
+                //在字段里面是 头工具栏事件 表格上面自带的按钮
+                , defaultToolbar: ['filter', 'print', 'exports']//修改得失表格上面按钮右边的按钮
+                , page: true                            //开启分页
+                , cols: [[ //列
+                    {field: 'id', title: '编号', align: 'center', sort: true}
+                    , {field: 'name', title: '城市名称', align: 'center'}
+                    , {field: 'type', title: '帮助描述', align: 'center',templet:function (obj) {
+                            var type;
+                            switch (obj.type) {
+                                case 0:
+                                    type="国";
+                                    break;
+                                case 1:
+                                    type="省";
+                                    break;
+                                case 2:
+                                    type="市";
+                                    break;
+                                case 3:
+                                    type="区";
+                                    break;
+                            }
+                            return type;
+                        }}
+                ]]
+            });
+
+            //头部工具栏的监听事件
+            table.on('toolbar(city)', function () {
+                $.ajax({
+                    url: "/back_city/upCity",
+                    success: function () {
+                        layer.msg('更新成功!', {icon: 6, time: 5000});
+                        // 重载表格
+                        table.reload("cityInfo")
+                    }, error: function (XMLHttpRequest) {
+                        if (XMLHttpRequest.status == 403) {
+                            layer.msg('对不起，你没有该权限', {icon: 5});
+                        }
+                    }
+                });
+            });
+            //搜索加载--数据表格重载
+            var $ = layui.$, active = {
+                reload: function () {
+                    var param = $('#param');//搜索框
+                    //执行重载
+                    table.reload('cityInfo', {//id 表格的
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: {
+                            param: param.val()//搜索框的值 插叙条件
+                        }
+                    });
+                }
+            };
+            //查询按钮点击事件
+            $('#searchBtn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            })
+        });
+    </script>
+</head>
+<body>
+<!--  模糊搜索  -->
+<div class="demoTable" style="margin-top: 15px;margin-left: 20px;">
+    <div class="layui-inline">
+        <input class="layui-input" name="param" id="param" autocomplete="off">
+    </div>
+    <button class="layui-btn layui-bg-blue" id="searchBtn" data-type="reload"><i class="layui-icon">&#xe615;</i>搜索</button>
+</div>
+<!-- 信息数据表格 -->
+<table class="layui-hide" lay-filter="city" id="cityInfo"></table>
+
+<!-- 头部按钮组件 -->
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn" lay-event="upTopic"><i class="layui-icon">&#xe669;</i>更新全国地区信息</button>
+    </div>
+</script>
+</body>
+</html>

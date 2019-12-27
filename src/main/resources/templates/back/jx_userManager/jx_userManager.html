@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>员工</title>
+    <!--layu样式-->
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <script src="/layuiadmin/layui/layui.js"></script>
+    <!--jquery-->
+    <script src="/js/jquery-3.1.1.js"></script>
+
+    <script type="text/javascript">
+        //使用表格
+        layui.use(['table', 'util', 'laydate', 'form'], function () {
+            var form = layui.form
+            var table = layui.table;
+            var util = layui.util;
+            var laydate = layui.laydate;
+            //日期时间选择器
+            laydate.render({
+                elem: '#searchStartTxt'
+            });
+            laydate.render({
+                elem: '#searchEndTxt'
+            });
+            table.render({
+                elem: '#jx_userInfo' //根基id获取元素
+                , url: '/back_jx_user/findAll' //路径
+                , height: 550
+                , cellMinWidth: 80   //定义全局最小宽度
+                , toolbar: '#toolbarDemo'
+                , cols: [[ //列
+                    {field: 'uid', title: '编号', width: 86, align: 'center'}
+                    , {field: 'uname', title: '公司名称', width: 89, align: 'center'}
+                    , {
+                        field: 'uimg', title: '公司头像', width: 89, align: 'center',
+                        templet: "<div><img src='/driving/{{d.uimg}}'></div>"
+                    }
+                    , {field: 'phone', title: '联系电话', width: 172, align: 'center'}
+                    , {field: 'intime', title: '注册时间', width: 172, align: 'center'}
+                    , {field: 'balance', title: '账户余额', width: 150, align: 'center'}
+                    , {field: 'aid', title: '认证', width: 100, align: 'center',
+                        templet:function (data) {
+                            return data.aid ==  0 ?"未认证":"已认证";
+                        }
+                    }
+                    , {field: 'state', title: '状态', width: 58, align: 'center',
+                        templet:function (data) {
+                            return data.state == 0 ? "可用" : "禁用";
+                        }
+                    }
+                    , {fixed: 'right', title: '操作', width: 200, align: 'center', toolbar: '#barDemo'}
+                ]]
+                , page: true//开启分页
+                , dataType: "json"
+            });
+
+            //监听行工具事件
+            table.on('tool(jx_user)', function (obj) {
+                var data = obj.data;
+                if (obj.event == 'del') {
+                    layer.confirm(data.state == 1?"真的要解禁该账户吗？":"真的要禁用该账户吗？", function (index) {
+                        layer.close(index);
+                        $.ajax({
+                            type: 'post',
+                            url: '/back_jx_user/upState',
+                            dataType: 'json',
+                            data: {uid: data.uid,state:data.state == 1?0:1},
+                            success: function (res) {
+                                if (res >= 1) {
+                                    layer.msg('操作成功', {icon: 1, time: 5000});
+                                    table.reload("jx_userInfo")
+                                }
+                            }, error: function (XMLHttpRequest) {
+                                if (XMLHttpRequest.status == 403) {
+                                    layer.msg('对不起，你没有该权限', {icon: 5});
+                                }
+                            }
+                        });
+                    });
+                }else if (obj.event == "look"){
+                    $.ajax({
+                        type: 'post',
+                        url: '/back_jx_user/findByJx_userId',
+                        dataType: 'json',
+                        data: {uid: data.uid},
+                        success: function (res) {
+                            if (res >= 1) {
+                                layer.msg('账号成功', {icon: 1, time: 5000});
+                                table.reload("jx_userInfo")
+                            }
+                        }, error: function (XMLHttpRequest) {
+                            if (XMLHttpRequest.status == 403) {
+                                layer.msg('对不起，你没有该权限', {icon: 5});
+                            }
+                        }
+                    });
+                }
+            });
+
+            //表格重载
+            var $ = layui.$, active = {
+                reload: function () {
+                    var uname = $('#uname').val();
+
+                    //执行重载
+                    table.reload('jx_userInfo', {
+                        method: 'post',
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: {
+                            uname: uname//文本框参数
+                        }
+                    });
+                }
+            };
+            // 搜索按钮点击
+            $('#searchBtn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+        });
+    </script>
+</head>
+<body>
+
+<div class="demoTable" style="margin-top: 15px;margin-left:30px;">
+    <div class="layui-input-inline">
+        <input class="layui-input" name="uname" id="uname"
+               autocomplete="off">
+    </div>
+    <button class="layui-btn layui-btn" id="searchBtn" data-type="reload"><i class="layui-icon">&#xe615;</i>搜索</button>
+
+</div>
+
+<!-- 信息数据表格 -->
+<table class="layui-hide" lay-filter="jx_user" id="jx_userInfo"></table>
+
+<!-- 行按钮组件 -->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="look"><i class="layui-icon">&#xe60a;</i>查看</a>
+    {{#if(d.state==0){ }}
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon">&#xe64c;</i> 禁用</a>
+    {{#}else{ }}
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon">&#xe64d;</i> 解禁</a>
+    {{#}}}
+</script>
+</body>
+</html>
