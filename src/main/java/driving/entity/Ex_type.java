@@ -20,7 +20,4 @@ public class Ex_type {
     //    类型描述
     @Column
     private String tDesc;
-    //    条件搜索
-    @Column
-    private String tWhere;
 }
