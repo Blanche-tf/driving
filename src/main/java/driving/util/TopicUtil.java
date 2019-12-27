@@ -1,12 +1,16 @@
 package driving.util;
 
+import driving.back.service.TopicService;
+import driving.entity.Ex_topic;
 import net.sf.json.JSONObject;
 
+import javax.annotation.Resource;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TopicUtil {
@@ -16,7 +20,8 @@ public class TopicUtil {
     public static String userAgent =  "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36";
 
     //配置您申请的KEY
-    public static final String APPKEY ="724d887f2a935bf5c914d70f6387c3eb";
+   // public static final String APPKEY ="724d887f2a935bf5c914d70f6387c3eb";
+    public static final String APPKEY ="42094aef5a486516914b56916346c021";
 
     //1.题库接口
     public static Object getRequest1(String subject,String model,String testType){
@@ -65,13 +70,53 @@ public class TopicUtil {
     }
 
 
+    @Resource
+    TopicService topicService;
 
     public static void main(String[] args)  throws Exception {
         //选择考试科目类型，1：科目1；4：科目4
         //驾照类型，可选择参数为：c1,c2,a1,a2,b1,b2；当subject=4时可省略
         //测试类型，rand：随机测试（随机100个题目），order：顺序测试（所选科目全部题目）
-        getRequest1("4","a1","order");
-        getRequest2();
+        /*List<Map<String,String>> topics = (List<Map<String,String>>)getRequest1("2", "c1", "order");
+        System.out.println("topics = " + topics);
+
+        Ex_topic ex_topic = new Ex_topic();
+
+        // 考试类型类型
+        ex_topic.setSid(1);
+
+        // 驾考类型
+        ex_topic.setMid(1);
+
+        for (int i = 0; i < topics.size(); i++) {
+            Map<String, String> topic = topics.get(i);
+            // 问题
+            ex_topic.setQuestion(topic.get("question"));
+            // 答案
+            ex_topic.setAnswer(topic.get("answer"));
+            // A B C D
+            ex_topic.setItem1(topic.get("item1"));
+            ex_topic.setItem2(topic.get("item2"));
+            ex_topic.setItem3(topic.get("item3"));
+            ex_topic.setItem4(topic.get("item4"));
+            // 帮助描述
+            ex_topic.setExplains(topic.get("explains"));
+            // 图片路径
+            ex_topic.setUrl(topic.get("url"));
+
+            //System.out.println("topic = " + topic);
+            //System.out.println("question = " + topic.get("question"));
+        }*/
+
+
+
+        // topicDAO.insert()
+
+        // 更新题库 : 添加 (参数:所属科目,考试类型)
+        TopicUtil.getRequest1("1","c1","order");
+
+
+        // getRequest2();
     }
 
     /**

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>部门</title>
+
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <script src="/layuiadmin/layui/layui.js"></script>
+    <script src="/js/jquery-3.1.1.js"></script>
+    <script type="text/javascript"></script>
+
+    <script type="text/javascript">
+        //使用表格
+        layui.use('table', function () {
+            var table = layui.table;
+            table.render({
+                elem: '#ex_subjects',
+                id: 'ex_subjectsReload',
+                height: 450,
+                url: '/back_ex_subjects/findAll',
+                cellMinWidth: 80,
+                limit: 10,
+                limits: [10, 15, 20],
+                page: true,
+                toolbar: "#toolbarDemo",
+
+                cols: [[
+                    {field: 'sid', title: '编号', align: 'center'},
+                    {field: 'subject', title: '科目名称(科一)', align: 'center'},
+                    {fixed: 'right', title: '操作', width: 200, align: 'center', toolbar: '#barDemo'}
+                ]],
+                dataType: 'json'
+            });
+
+
+            //表格重载
+            var $ = layui.$, active = {
+                reload: function () {
+                    var name = $('#name').val();
+                    //执行重载,重新起的新的id
+                    table.reload('ex_subjectsReload', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: {
+                            name: name
+                        }
+                    });
+                }
+            };
+
+            $('#searchBtn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+
+            //头部工具栏的监听事件
+            table.on('toolbar(ex_subject)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                $.ajax({
+                    url: "/back/topicManager/subjectsadd.html",
+                    success: function () {
+                        layer.open({
+                            title: '添加考试科目'
+                            , id: 'add'
+                            , type: 2
+                            , content: '/back/topicManager/subjectsadd.html'
+                            , offset: '50px'//居上10左右居中
+                            , resize: false//不可改变大小
+                            , fixed: false//鼠标滚动时，固定在可视区域
+                            , btn: '关闭'
+                            , btnAlign: 'c' //按钮居中
+                            , shade: 0.3 //遮罩
+                            , area: ['450px', '230px']
+                        });
+                    },
+                    error: function (XMLHttpRequest) {
+                        if (XMLHttpRequest.status == 403) {
+                            layer.msg('对不起，你没有该权限', {icon: 5});
+                        }
+                    }
+                })
+            });
+
+            //监听行工具事件
+            table.on('tool(ex_subject)', function (obj) {
+                var data = obj.data;
+                if (obj.event == 'delete') {
+                    layer.confirm('真的要删除该科目吗？', function (index) {
+                        layer.close(index);
+                        $.ajax({
+                            type: 'post',
+                            url: '/back_ex_subjects/delete',
+                            dataType: 'json',
+                            data: {sid: data.sid},
+                            success: function (res) {
+                                if (res == 1) {
+                                    layer.msg('删除成功', {icon: 1, time: 5000});
+                                    table.reload("ex_subjectsReload")
+                                }
+                            },error: function (XMLHttpRequest) {
+                                if (XMLHttpRequest.status == 403) {
+                                    layer.msg('对不起，你没有该权限', {icon: 5});
+                                }
+                            }
+                        });
+                    });
+
+                } else if (obj.event == 'update') {
+                    $.ajax({
+                        url: "/back_ex_subjects/updateShow?sid=" + data.sid,
+                        success: function () {
+                            layer.open({
+                                title: '修改考试科目'
+                                , id: 'upd'
+                                , type: 2
+                                , content: '/back_ex_subjects/updateShow?sid=' + data.sid
+                                , offset: '10px'//居上100左右居中
+                                , resize: false//不可改变大小
+                                , fixed: false//鼠标滚动时，固定在可视区域
+                                , btn: '关闭'
+                                , btnAlign: 'c' //按钮居中
+                                , shade: 0.3 //遮罩
+                                , area: ['450px', '280px']
+                            });
+                        },
+                        error: function (XMLHttpRequest) {
+                            if (XMLHttpRequest.status == 403) {
+                                layer.msg('对不起，你没有该权限', {icon: 5});
+                            }
+                        }
+                    })
+                }
+            });
+        });
+
+    </script>
+</head>
+<body>
+<div class="demoTable" style="margin-top: 15px;margin-left: 20px;">
+    <div class="layui-inline">
+        <input class="layui-input" id="name" autocomplete="off">
+    </div>
+    <button class="layui-btn" id="searchBtn" data-type="reload"><i class="layui-icon">&#xe615;</i>搜索</button>
+</div>
+
+
+<!-- 信息数据表格 -->
+<table class="layui-hide" lay-filter="ex_subject" id="ex_subjects"></table>
+
+
+<!-- 行按钮组件 -->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete"><i class="layui-icon"></i> 删除</a>
+    <a class="layui-btn layui-btn-xs" lay-event="update"><i class="layui-icon"></i>修改</a>
+</script>
+
+<!-- 头部按钮组件 -->
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn" lay-event="addex_subjects"><i class="layui-icon">&#xe654;</i>添加科目</button>
+    </div>
+</script>
+</body>
+</html>

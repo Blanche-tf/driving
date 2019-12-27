@@ -18,8 +18,11 @@ public class School_LoginHandlerInterceptor implements HandlerInterceptor {
             System.out.println("跳转登录页面");
             response.sendRedirect("/school/views/user/login.html");
             return false;
+        }else {
+            // 跳转主页面:可以传递session
+            response.sendRedirect("/school_login/index");
+            return true;
         }
-        return true;
     }
 
     @Override

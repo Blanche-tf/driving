@@ -27,8 +27,6 @@ public class School_LoginService {
 
 
     public int SchoolResetSubmit(Jx_user jx_user){
-        return  schoolLoginDAO.updateByPrimaryKey(jx_user);
+        return  schoolLoginDAO.updateByPrimaryKeySelective(jx_user);
     }
-
-
 }

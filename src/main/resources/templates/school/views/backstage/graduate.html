@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css" media="all">
+    <script src="/layuiadmin/layui/layui.js"></script>
+    <script src="/style/js/jquery.1.10.1.min.js" type="text/javascript"></script>
+    <style type="text/css">
+        .layui-table-cell {
+            height: 70px;
+        }
+    </style>
+    <script type="text/javascript">
+
+        //自定义“状态”列
+        function ZhuangTai(data) {
+            var state = data.state;
+            if (state == 0) {
+                return "在练";
+            }
+            if (state ==1) {
+                return "正常毕业";
+            }
+            if (state ==2) {
+                return "五次不过";
+            }
+            if (state ==3) {
+                return "退学";
+            }
+        }
+
+
+        layui.use('table',function () {
+            var table = layui.table;
+            table.render({
+                elem: '#studentinfo',
+                id: 'studentinfoReload',
+                height: 450
+                , url: '/school_student/studentFind?state=1'
+                , cellMinWidth: 80
+                , limit: 10,
+                limits: [10, 20, 30],
+                page: true,
+                toolbar: "#toolbarTop",
+                cols: [[
+                    {field: 'sId', width: 80, title: '编号', sort: true}
+                    , {field: 'sName', width: 80, title: '名称'}
+                    , {field: 'sex', width: 60, title: '性别'}
+                    , {field: 'age', width: 60, title: '年龄'}
+                    , {field: 'phone', title: '手机号', width: 120} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                    , {field: 'idCard', title: '身份证号', width: 175}
+                    , {
+                        field: 'zImg',
+                        title: '正面身份证图片',
+                        width: '10%',
+                        minWidth: 100,
+                        templet: "<div><img src='/driving/{{d.zImg}}'></div>"
+                    }
+                    , {
+                        field: 'fImg',
+                        title: '反面身份证图片',
+                        width: '10%',
+                        minWidth: 100,
+                        templet: "<div><img src='/driving/{{d.fImg}}'></div>"
+                    }
+                    , {field: 'state', width: 90, title: '状态', templet: ZhuangTai, align: 'center'}
+                    , {field: 'outDesc', width: 100, title: '描述'},
+                    {fixed: 'right', title: '操作', width: 250, align: 'center', toolbar: '#barDemo'}
+                ]],
+                dataType: 'json'
+            });
+
+
+            var $ = layui.$, active = {
+                reload: function () {
+                    var sName = $('#sName').val();
+                    //执行重载,重新起的新的id
+                    table.reload('studentinfoReload', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: {
+                            sName: sName
+                        }
+                    });
+                }
+            };
+
+            $('#searchBtn').on('click', function(){
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+
+
+
+            table.on('tool(student)', function(obj) {
+                var data = obj.data;
+                var event = obj.event;
+                if (event == "kh") {
+                    layer.open({
+                        title: '查看客户信息'
+                        , id: 'kh'
+                        , type: 2
+                        , content: '/school_student/khfind?uid=' + data.uid
+                        , offset: '10px'//居上100左右居中
+                        , resize: false//不可改变大小
+                        , fixed: false//鼠标滚动时，固定在可视区域
+                        , btn: '关闭'
+                        , btnAlign: 'c' //按钮居中ewq    4cwszqv uytre
+                        , shade: 0 //遮罩
+                        , area: ['600px', '300px']
+                    });
+                }
+            });
+
+            });
+
+
+
+
+    </script>
+
+
+
+
+</head>
+<body>
+
+<div class="demoTable" style="margin-top: 10px">
+    搜索学员名称：
+    <div class="layui-inline">
+        <input class="layui-input" id="sName" autocomplete="off">
+    </div>
+
+    <button  class="layui-btn" id="searchBtn" data-type="reload">搜索</button>
+</div>
+<table class="layui-hide" lay-filter="student" id="studentinfo">
+</table>
+
+
+<script type="text/html" id="barDemo">
+
+    <div class="layui-btn-container">
+
+        <button class="layui-btn layui-btn-sm" lay-event="kh"><i class="layui-icon">&#xe770;</i>查看</button>
+    </div>
+</script>
+</body>
+</html>

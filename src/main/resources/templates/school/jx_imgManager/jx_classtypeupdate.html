@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>部门修改</title>
+    <!--layu样式-->
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <script src="/layuiadmin/layui/layui.js"></script>
+    <!--jquery-->
+    <script src="/js/jquery-3.1.1.js"></script>
+
+    <script type="text/javascript">
+        layui.use(['form','layer'], function() {
+            var form = layui.form;
+            //监听提交
+            form.on('submit(submitBtn)', function (data) {
+                var param = data.field;//定义临时变量获取表单提交过来的数据，非json格式
+                $.ajax({
+                    url: "/school_jx_classtype/update",
+                    type: 'post',
+                    dataType: 'json',
+                    data: param,
+                    success: function (res) {
+                        if (res == 1) {
+                            layer.msg('操作成功',{icon: 6,time: 5000});
+                            parent.layui.table.reload('jx_classtypeReload');
+                            setTimeout('window.parent.layer.closeAll()',1000)
+                        } else {
+                            layer.msg(res.error);
+                        }
+                    }
+                });
+                return false;
+            });
+        })
+    </script>
+</head>
+<body>
+
+<div style="margin-top: 20px;margin-left: 25px">
+    <form class="layui-form" id="posForm" lay-filter="ex_model">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">课程编号</label>
+            <div class="layui-input-block">
+                <input id="cId" type="text" style="width: 220px;" name="cId" lay-verify="cId"
+                       autocomplete="off" required class="layui-input"
+                       th:value="${school_jx_classtype.cId}"  readonly="readonly">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">课程名称</label>
+            <div class="layui-input-block">
+                <input id="cName" type="text" style="width: 220px;" name="cName" lay-verify="cName"
+                       autocomplete="off" required class="layui-input"
+                       th:value="${school_jx_classtype.cName}">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">驾照类型</label>
+            <div class="layui-input-block" style="width: 220px">
+                <select name="mId"   id="mid" lay-verify="required" lay-filter="mid" class="layui-input"  >
+                    <option value="">请选择</option>
+                    <option th:each="m:${ex_models}"
+                            th:selected="${m.mid eq school_jx_classtype.mId}"
+                            th:value="${m.mid}" th:text="${m.model}">请选择</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">班型费用</label>
+            <div class="layui-input-block">
+                <input id="money" type="text" style="width: 220px;" name="money" lay-verify="money"
+                       autocomplete="off" required class="layui-input"
+                       th:value="${school_jx_classtype.money}"  >
+            </div>
+        </div>
+        
+        <div class="layui-form-item">
+            <label class="layui-form-label">学车时间</label>
+            <div class="layui-input-block">
+                <input id="cTime" type="text" style="width: 220px;" name="cTime" lay-verify="cTime"
+                       autocomplete="off" required class="layui-input"
+                       th:value="${school_jx_classtype.cTime}" >
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">几人一车</label>
+            <div class="layui-input-block">
+                <input id="people" type="text" style="width: 220px;" name="people" lay-verify="people"
+                       autocomplete="off" required class="layui-input"
+                       th:value="${school_jx_classtype.people}"  >
+            </div>
+        </div>
+
+        
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">班型描述</label>
+            <div class="layui-input-block">
+                <input id="cDesc" type="text" style="width: 220px;" name="cDesc" lay-verify="cDesc"
+                       autocomplete="off" required class="layui-input"
+                       th:value="${school_jx_classtype.cDesc}" >
+            </div>
+        </div>
+
+
+        
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="submitBtn">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+</body>
+</html>

@@ -45,4 +45,90 @@ public class Kh_user {
     private Integer cId;
 
 
+    public Integer getUid() {
+        return uid;
+    }
+
+    public void setUid(Integer uid) {
+        this.uid = uid;
+    }
+
+    public String getUname() {
+        return uname;
+    }
+
+    public void setUname(String uname) {
+        this.uname = uname;
+    }
+
+    public String getUing() {
+        return uing;
+    }
+
+    public void setUing(String uing) {
+        this.uing = uing;
+    }
+
+    public String getuAccout() {
+        return uAccout;
+    }
+
+    public void setuAccout(String uAccout) {
+        this.uAccout = uAccout;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Date getIntime() {
+        return intime;
+    }
+
+    public void setIntime(Date intime) {
+        this.intime = intime;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
+    public Integer getJxuid() {
+        return jxuid;
+    }
+
+    public void setJxuid(Integer jxuid) {
+        this.jxuid = jxuid;
+    }
+
+    public Integer getcId() {
+        return cId;
+    }
+
+    public void setcId(Integer cId) {
+        this.cId = cId;
+    }
+
+    @Override
+    public String toString() {
+        return "Kh_user{" +
+                "uid=" + uid +
+                ", uname='" + uname + '\'' +
+                ", uing='" + uing + '\'' +
+                ", uAccout='" + uAccout + '\'' +
+                ", password='" + password + '\'' +
+                ", intime=" + intime +
+                ", state=" + state +
+                ", jxuid=" + jxuid +
+                ", cId=" + cId +
+                '}';
+    }
 }

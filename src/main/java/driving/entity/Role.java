@@ -13,6 +13,7 @@ import javax.persistence.Table;
 public class Role {
     //    编号
     @Id
+    @Column
     private Integer rid;
     //    角色名称
     @Column
@@ -20,4 +21,7 @@ public class Role {
     //    角色描述
     @Column
     private String rDesc;
+    //    所属部门
+    @Column
+    private Integer did;
 }

@@ -23,7 +23,7 @@ public class Jx_user {
     private String uname;
     //    驾校图片
     @Column
-    private String uing;
+    private String uimg;
     //    驾校账号
     @Column
     private String phone;
@@ -45,90 +45,4 @@ public class Jx_user {
     @Column
     private Integer state;
 
-    public Integer getUid() {
-        return uid;
-    }
-
-    public void setUid(Integer uid) {
-        this.uid = uid;
-    }
-
-    public String getUname() {
-        return uname;
-    }
-
-    public void setUname(String uname) {
-        this.uname = uname;
-    }
-
-    public String getUing() {
-        return uing;
-    }
-
-    public void setUing(String uing) {
-        this.uing = uing;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Date getIntime() {
-        return intime;
-    }
-
-    public void setIntime(Date intime) {
-        this.intime = intime;
-    }
-
-    public Double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(Double balance) {
-        this.balance = balance;
-    }
-
-    public Integer getAid() {
-        return aid;
-    }
-
-    public void setAid(Integer aid) {
-        this.aid = aid;
-    }
-
-    public Integer getState() {
-        return state;
-    }
-
-    public void setState(Integer state) {
-        this.state = state;
-    }
-
-    @Override
-    public String toString() {
-        return "Jx_user{" +
-                "uid=" + uid +
-                ", uname='" + uname + '\'' +
-                ", uing='" + uing + '\'' +
-                ", phone='" + phone + '\'' +
-                ", password='" + password + '\'' +
-                ", intime=" + intime +
-                ", balance=" + balance +
-                ", aid=" + aid +
-                ", state=" + state +
-                '}';
-    }
 }

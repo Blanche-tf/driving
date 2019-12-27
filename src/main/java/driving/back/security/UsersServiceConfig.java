@@ -25,26 +25,25 @@ public class UsersServiceConfig implements UserDetailsService {
     HttpSession session;
 
     @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        //根据用户名回去用户信息
-        Emp user=usersService.selectByUname(s);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println("获取的username："+username);
+        //1.根据用户名回去用户信息
+        Emp user=usersService.selectByUname(username);
         // 把登录人的信息存在session
         session.setAttribute("back_login",user);
-        System.out.println("登录人的信息;"+session.getAttribute("back_login"));
 
-        // 用户名查到 并且账号状态为0
+        // 3.用户名查到 并且账号状态为0
         if(null!=user && user.getState() == 0)
         {
             List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
 
-            //根据用户的名称去查询职位的编号
-            Integer posId = usersService.findPosIdByUserName(s);
-            //将posid存到session中 方便在controller中获取
-            System.out.println("posId"+posId);
-            // 把角色编号存在seesion
+            // 4.根据用户的名称去查询职位的编号
+            Integer posId = usersService.findPosIdByUserName(username);
+
+            // 5.把角色编号存在seesion
             session.setAttribute("posId",posId);
             String role=posId.toString();
-            //获取对应的权限
+            //6.获取对应的权限
             SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority(role);
             return new User(user.getUserName(),user.getPassword(), list);
         }

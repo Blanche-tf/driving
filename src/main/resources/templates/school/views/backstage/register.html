@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>报名登记</title>
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css" media="all">
+</head>
+<body>
+
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">报名登记</div>
+        <div class="layui-card-body" style="padding: 15px;">
+            <form class="layui-form" action="" lay-filter="component-form-group">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">学员名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="sName" id="sName" lay-verify="title" autocomplete="off" placeholder="请输入名称" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">学员性别</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="sex" value="男" title="男" checked="">
+                        <input type="radio" name="sex" value="女" title="女">
+                    </div>
+                </div>
+
+
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">学员年龄</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="age" id="age" lay-verify="required" placeholder="请输入年龄" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">学员手机</label>
+                        <div class="layui-input-inline">
+                            <input type="tel" name="phone" id="phone" lay-verify="required|phone" placeholder="请输入手机号" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">身份证号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="idCard" id="idCard" lay-verify="identity" placeholder="请输入身份证号" placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">正面身份证</label>
+                    <div class="layui-input-inline">
+<!--                        th:value="${user.uing}"-->
+                        <input name="zImg" lay-verify="required" id="demo1" placeholder="图片地址"   class="layui-input">
+                    </div>
+                    <div class="layui-upload">
+                        <button type="button" class="layui-btn" id="test1">正面身份证上传</button>
+                    </div>
+                </div>
+
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">反面身份证</label>
+                    <div class="layui-input-inline">
+                        <input name="fImg" lay-verify="required" id="demo2" placeholder="图片地址"  th:value="${user.uing}" class="layui-input">
+                    </div>
+                    <div class="layui-upload">
+                        <button type="button" class="layui-btn" id="test2">反面身份证上传</button>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">学员描述</label>
+                    <div class="layui-input-block">
+                        <textarea name="outDesc" id="outDesc" placeholder="请输入描述" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item layui-layout-admin">
+                    <div class="layui-input-block">
+                        <div class="layui-footer" style="left: 0;">
+                            <button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">立即提交</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/style/js/jquery.1.10.1.min.js" type="text/javascript"></script>
+<!--<script src="/layuiadmin/layui/layui.js"></script>-->
+<script>
+
+   layui.use(['upload', 'jquery'], function () {
+       var $ = layui.$,
+           upload = layui.upload;
+       upload.render({
+           elem: '#test1'
+           , url: '/school_information/uploadSource'
+           , multiple: true
+           ,
+           done: function (res) {
+               $("#demo1").val(res.msg);
+           }
+       });
+   });
+
+   layui.use(['upload', 'jquery'], function () {
+       var $ = layui.$,
+           upload = layui.upload;
+       upload.render({
+           elem: '#test2'
+           , url: '/school_information/uploadSource'
+           , multiple: true
+           ,
+           done: function (res) {
+               $("#demo2").val(res.msg);
+           }
+       });
+   });
+
+
+
+
+
+
+    layui.config({
+        base: '/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'form', 'laydate'], function(){
+        var $ = layui.$
+            ,admin = layui.admin
+            ,element = layui.element
+            ,layer = layui.layer
+            ,laydate = layui.laydate
+            ,form = layui.form;
+
+        form.render(null, 'component-form-group');
+
+        laydate.render({
+            elem: '#LAY-component-form-group-date'
+        });
+
+        /* 自定义验证规则 */
+        form.verify({
+            title: function(value){
+                if(value.length < 2){
+                    return '姓名至少得2个字啊';
+                }
+            }
+            ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+            ,content: function(value){
+                layedit.sync(editIndex);
+            }
+        });
+        /* 监听指定开关 */
+        form.on('switch(component-form-switchTest)', function(data){
+            layer.msg('开关checked：'+ (this.checked ? 'true' : 'false'), {
+                offset: '6px'
+            });
+            layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
+        });
+        /* 监听提交 */
+        form.on('submit(component-form-demo1)', function(data){
+                var sName = $("#sName").val();
+                var sex =  jQuery('[name="sex"]:checked').val();
+                var age = $("#age").val();
+                var phone = $("#phone").val();
+                var idCard = $("#idCard").val();
+                var zImg = $("#demo1").val();
+                var fImg = $("#demo2").val();
+                var outDesc = $("#outDesc").val();
+                //alert("sname:"+sName+"sex:"+sex+"age:"+age+"phone:"+phone+"idcard:"+idCard+"zimg:"+zing+"fing:"+fing+"outDesc:"+outDesc);
+                //alert("zimg:"+zing+"fing:"+fing)
+                $.ajax({
+                    url: '/school_student/studentAdd',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {sName: sName, sex: sex, age: age, phone: phone, idCard: idCard, zImg: zImg, fImg: fImg,outDesc:outDesc},
+                    success: function (data) {
+                       if (data==1){
+                           layer.msg('账号密码为[123456]系数较低，请去修改密码!', {
+                               time: 3000 //2秒关闭（如果不配置，默认是3秒）
+                           }, function () {
+                               window.location.reload();
+                           });
+                       }
+                        // layer.msg('账号密码系数较低，请去修改密码!',{icon: 6, time: 5000});
+                        // window.location.href = '/school/views/backstage/register.html';
+                    }
+                });
+
+            return false;
+        });
+    });
+</script>
+
+
+
+</body>
+</html>

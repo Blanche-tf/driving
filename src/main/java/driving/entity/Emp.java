@@ -20,6 +20,12 @@ public class Emp {
     //    员工名称
     @Column
     private String ename;
+    //    员工性别
+    @Column
+    private String sex;
+    //    身份证号
+    @Column
+    private String idcard;
     //    员工图片
     @Column
     private String empimg;
@@ -52,8 +58,8 @@ public class Emp {
     @Column
     private Integer operationUid;
     //    操作时间
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column
-    private Integer operationTime;
-
-
+    private Date operationTime;
 }

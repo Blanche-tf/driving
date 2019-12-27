@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://wwww.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <!--先引用layui的js-->
+    <script type="text/javascript" src="/layui/layui.js"></script>
+    <script type="text/javascript" src="/layui/jquery-1.12.4.min.js"></script>
+    <!--引用xtree-->
+    <script src="/layui/layui-xtree.js"></script>
+    <style type="text/css">
+        .layui-table-cell {
+            height: 70px;
+        }
+    </style>
+
+    <script>
+        layui.use(['form', 'table'], function () {
+            var form = layui.form;
+            var $ = layui.$;
+            var table = layui.table;
+            table.render({
+                elem: '#roleinfo',
+                id: 'roleinfoReload',
+                method: 'post',
+                url: '/back_role/findAll',
+                limit: 10,
+                limits: [10, 15, 20],
+                page: true,
+                toolbar: "#toolbarTop",
+                cols: [
+                    [
+                        {field: 'rid', title: '编号', align: 'center', fixed: 'left', sort: true},
+                        {field: 'rname', title: '角色名称', align: 'center'},
+                        {field: 'rdesc', title: '角色描述', align: 'center'},
+                        {fixed: 'right', title: '操作', width: 450, align: 'center', toolbar: '#toolbarInner'}
+                    ]
+                ],
+                dataType: 'json'
+            });
+
+            //表格重载
+            var $ = layui.$, active = {
+                reload: function () {
+                    var param = $('#param').val();
+                    //执行重载,重新起的新的id
+                    table.reload('roleinfoReload', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: {
+                            param: param
+                        }
+                    });
+                }
+            };
+
+            $('#searchBtn').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+            //头部工具栏的监听事件 table：lay-filter="role"
+            table.on('toolbar(role)', function(obj){
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch(obj.event){
+                    case 'addPos':
+                        layer.open({
+                            title:'添加职务'
+                            ,id:'add'
+                            ,type: 2
+                            ,content: '/back_role/addShowRole'
+                            ,offset:'50px'//居上10左右居中
+                            ,resize:false//不可改变大小
+                            ,fixed: false//鼠标滚动时，固定在可视区域
+                            ,btn: '关闭'
+                            ,btnAlign: 'c' //按钮居中
+                            ,shade: 0.3 //遮罩
+                            ,area:['450px','330px']
+                        });
+                        break;
+
+                };
+            });
+            
+            
+            
+            
+            // 角色编号
+            var rid;
+
+
+            //监听行工具事件 table：lay-filter="role"
+            table.on('tool(role)', function (obj) {
+                var data = obj.data;
+                rid = data.rid;
+
+                if (obj.event =='upModules'){
+                    // 菜单显示
+                    //1、最基础的用法 - 直接绑定json
+                    var xtree1 = new layuiXtree({
+                        elem: 'xtree1'   //(必填) 放置xtree的容器，样式参照 .xtree_contianer
+                        , form: form     //(必填) layui 的 from
+                        , data: "/back_modules/getTreeModule?rid=" + rid     //(必填) json数据
+                    });
+
+                    // 打开菜单div隐藏
+                    layer.open({
+                        type: 1,
+                        skin: 'layui-layer-rim', //加上边框
+                        area: ['450px', '360px'], //宽高
+                        content: $("#add-main")
+                    });
+                } else if(obj.event == 'del'){
+                    layer.confirm('真的要删除该职务吗？', function(index){
+                        layer.close(index);
+                        $.ajax({
+                            type:'post',
+                            url:'/back_role/delRole',
+                            dataType:'json',
+                            data:{roleId:data.rid},
+                            success:function(res){
+                                if(res==1) {
+                                    layer.msg('删除成功', {icon: 1, time: 5000});
+                                    table.reload("roleinfoReload")
+                                }
+                            },error:function(XMLHttpRequest){
+                                if (XMLHttpRequest.status==403){
+                                    layer.msg('对不起，你没有该权限', {icon: 5});
+                                }
+                            }
+                        });
+                    });
+                } else if(obj.event == 'update'){
+                    $.ajax({
+                        url:"/back_role/updateShowRole?roleId="+data.rid,
+                        success:function(){
+                            layer.open({
+                                title:'修改职务'
+                                ,id:'upd'
+                                ,type: 2
+                                ,content: '/back_role/updateShowRole?roleId='+data.rid
+                                ,offset:'50px'//居上100左右居中
+                                ,resize:false//不可改变大小
+                                ,fixed: false//鼠标滚动时，固定在可视区域
+                                ,btn: '关闭'
+                                ,btnAlign: 'c' //按钮居中
+                                ,shade: 0.3 //遮罩
+                                ,area:['450px','400px']
+                            });
+                        },
+                        error:function(XMLHttpRequest){
+                            if (XMLHttpRequest.status==403){
+                                layer.msg('对不起，你没有该权限', {icon: 5});
+                            }
+                        }
+                    })
+                }
+            });
+
+            // 修改权限
+            form.on('submit(*)', function (data) {
+                // 给所有的复选框设name值
+                $('input[type=checkbox]:checked').each(function () {
+                    //arr_box.push($(this).val());
+                    $(this).attr("name", "modules");
+                });
+                //数组
+                console.log($("#modulesFrm").serializeArray());
+                console.log(rid);
+
+                $.ajax({
+                    type: 'post',
+                    url: "/back_modules/modules_role?" + $("#modulesFrm").serialize() + "&rid=" + rid,
+                    success: function (data) {
+                        /*layer.msg("设置成功", {icon: 1});
+
+                        // 隐藏分配权限的的树形菜单
+                        $("#add-main").attr("display","none");
+*/
+
+                        //当你在iframe页面关闭自身时
+                      /*/!*  var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+
+                        parent.layer.close(index)*!/;*/ //再执行关闭   
+
+                        layer.alert('提交成功', {
+                            skin: 'layui-layer-molv' //样式类名  自定义样式
+                            ,closeBtn: 1    // 是否显示关闭按钮
+                            ,anim: 1 //动画类型
+                            ,btn: ['确定'] //按钮
+                            ,icon: 6    // icon
+                            ,yes:function() {
+                              //  alert(1)
+                                //当你在iframe页面关闭自身时
+                                //var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                //alert(index)
+
+                                layer.close(layer.index); //它获取的始终是最新弹出的某个层，值是由layer内部动态递增计算的
+                                layer.close(layer.index-1); //它获取的始终是最新弹出的某个层，值是由layer内部动态递增计算的
+                                /*parent.layer.close(2); //再执行关闭*/
+                            }
+                        })
+                    }, error: function (XMLHttpRequest) {
+                        if (XMLHttpRequest.status == 403) {
+                            layer.msg("对不起，你没有该权限", {icon: 2});
+                        } else {
+                            layer.msg("出错了" + XMLHttpRequest.status, {icon: 2});
+                        }
+                    }
+                });
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+
+        });
+
+    </script>
+</head>
+<body>
+</body>
+<div class="demoTable" style="width: 968px;
+    margin:10px auto;color: #7185a2">
+    搜索商品名称：
+    <div class="layui-inline">
+        <input class="layui-input" id="param" autocomplete="off">
+    </div>
+
+    <button class="layui-btn" id="searchBtn" data-type="reload"><i class="layui-icon">&#xe615;</i>搜索</button>
+</div>
+<table class="layui-hide" lay-filter="role" id="roleinfo"></table>
+
+<!--    菜单显示    -->
+<div id="add-main" style="display: none;" ->
+    <!--别忘记form 以及form的class-->
+    <form class="layui-form" id="modulesFrm">
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+            </div>
+        </div>
+        <div id="xtree1" class="xtree_contianer"></div>
+    </form>
+</div>
+
+
+
+
+
+
+<!-- 头部按钮组件 -->
+<script type="text/html" id="toolbarTop" >
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn" lay-event="addPos"><i class="layui-icon">&#xe654;</i>添加职务</button>
+    </div>
+</script>
+
+
+<!-- 行内按钮组件 -->
+<script type="text/html" id="toolbarInner">
+    <a class="layui-btn layui-btn" lay-event="update"><i class="layui-icon">&#xe642;</i>修改</a>
+    <a class="layui-btn  layui-btn-warm" lay-event="del"><i class="layui-icon"></i> 删除</a>
+    <button class="layui-btn layui-btn-danger" lay-event="upModules"><i class="layui-icon">&#xe716;</i>设置权限</button>
+</script>
+</body>
+</html>

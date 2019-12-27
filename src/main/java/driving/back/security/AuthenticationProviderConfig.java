@@ -8,7 +8,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 
 
@@ -17,14 +21,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthenticationProviderConfig implements AuthenticationProvider {
 
-    @Autowired
+    @Resource
     UsersServiceConfig usersServiceConfig;
 
-    @Autowired
+    @Resource
     Back_EmpService usersService;
 
-    /*@Autowired
-    private BCryptPasswordEncoder encode;*/
+    // 加密,解密
+   /* @Resource
+    BCryptPasswordEncoder encode;*/
+
+
     /**
      * 认证
      * authentication ：待认证的身份信息
@@ -42,24 +49,22 @@ public class AuthenticationProviderConfig implements AuthenticationProvider {
         String  credentials = authentication.getCredentials().toString();
         System.out.println("表单提交用户名和密码："+username+"  "+credentials);
 
-        //进行解密认证  第一参数是表单提交的值 第二个参数是数据库查询的值 ☆☆☆☆☆☆
-       /* boolean b = encode.matches(credentials, users.getPassword());
-        System.out.println(b);*/
+
 
         //通过用户名去加载用户详细信息  真实的用户信息
 
         UserDetails userDetails = usersServiceConfig.loadUserByUsername(username);
 
-        /*System.out.println("userdetaisl:"+userDetails);*/
-
-
+        //进行解密认证  第一参数是表单提交的值 第二个参数是数据库查询的值 ☆☆☆☆☆☆
+        BCryptPasswordEncoder encode = new BCryptPasswordEncoder();
+        boolean flag = encode.matches(credentials, userDetails.getPassword());
         //判断是否存在
         if (userDetails == null){
             System.out.println("用户不存在");
             return null;
         }else {
-            //if (userDetails.getPassword().equals(credentials) || b==true){
-            if (userDetails.getPassword().equals(credentials)){
+            // encode.matches(credentials, userDetails.getPassword())==true
+            if (flag){
                 //存入session
                 System.out.println("认证成功，密码输入正确");
                 //principal ：证书（用户的身份信息）  credentials：凭证（密码）   authorities：授权（权限）
@@ -80,4 +85,5 @@ public class AuthenticationProviderConfig implements AuthenticationProvider {
     public boolean supports(Class<?> authentication) {
         return true;
     }
+
 }

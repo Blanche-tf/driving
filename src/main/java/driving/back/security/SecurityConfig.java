@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.annotation.Resource;
 
@@ -30,24 +31,17 @@ import javax.annotation.Resource;
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         // 解决跨域
         http.headers().frameOptions().disable();
 
 
-
-
        //设置权限 只在这些路径下面进行权限的设置和访问
         http.authorizeRequests()//只设置后台请求才能触发认证
-                .antMatchers("/back_login/**","/back_modules/**","/pos/**").access("@permissionConfig.hasPermission(request,authentication)").and().csrf().disable();
-/*// 权限配置
-        http.authorizeRequests()//http所有请求
-                .antMatchers().
-                //是否支持某一个权限  通过自定义的PermissionConfig类
-                //返回true说明有 false 没有  通过方法的返回值判断有没有增删改查的权限
-                        access("@permissionConfig.hasPermission(request,authentication)").and()
-                // 禁用csrf跨域请求
-                .csrf().disable();*/
+                //                     一帆驾校后台登录,         左边菜单,     角色管理       ,部门管理     ,员工管理,"/back_emp/**"   , 题库管理 ,全国城市信息管理
+                .antMatchers("/back_login/**","/back_modules/**","/back_role/**","/back_dept/**","/back_topic/**","/back_city/**"
+                        //  考试科目管理(科一),考试类型管理(C1),题库分类名称(安全行车常识/章节/按内容)
+                        ,"/back_ex_subjects/**","/back_ex_model/**","/back_ex_cf/**"   ).
+                access("@permissionConfig.hasPermission(request,authentication)").and().csrf().disable();
 
 
 
@@ -70,7 +64,7 @@ import javax.annotation.Resource;
                 // 登录成功默认跳转的地址,在没有访问资源时才会跳转  就是你没有访问的其他路径被拦截的时候（直接访问登录进行登录而登录成功的路径）
                 //如果要是在访问其他路径被拦截到登录页面，则登录成功之后会直接跳转到登录之前访问的路径
                 /*.defaultSuccessUrl("/back/views/index.html")*/
-                .defaultSuccessUrl("/back_login/login-success")
+                .defaultSuccessUrl("/back_login/login-success",true)
                 //.successHandler(new ForwardAuthenticationSuccessHandler("/back/views/index.html"))
                 // 失败的地址
                 .failureUrl("/back_login/login-error")
@@ -78,18 +72,47 @@ import javax.annotation.Resource;
                 .usernameParameter("username")
                 .passwordParameter("password")
                 // 不进行认证
-                .permitAll();
-              /*  .and()
-                //配置退出
-                .logout()
-                //退出的地址
-                .logoutUrl("/back_login/loginOut")
-                //退出成功的地址
-                .logoutSuccessUrl("/back_login/login")
+                .permitAll()
                 .and()
                 //禁用csrf跨域请求
                 .csrf()
-                .disable();*/
+                .disable();
+
+
+
+
+        //定制退出
+        http.logout()
+                //.logoutUrl("/sys/doLogout")  //只支持定制退出url
+                //支持定制退出url以及httpmethod
+                .logoutRequestMatcher(new AntPathRequestMatcher("/back_login/loginOut", "GET"))
+                .addLogoutHandler((request,response,authentication) -> System.out.println("=====1====="))
+                .addLogoutHandler((request,response,authentication) -> System.out.println("=====2======"))
+                .addLogoutHandler((request,response,authentication) -> System.out.println("=====3======"))
+                .logoutSuccessHandler(((request, response, authentication) -> {
+                    System.out.println("=====4=======");
+                    response.sendRedirect("/back_login/login");
+                }))
+                //.logoutSuccessUrl("/html/logoutsuccess2.html")  //成功退出的时候跳转的页面
+                //.deleteCookies()  //底层也是使用Handler实现的额
+                //清除认证信息
+                .clearAuthentication(true)
+                    .invalidateHttpSession(true)
+        ;  //使session失效
+
+
+      /*  http.logout().logoutUrl().logoutSuccessHandler(new )*/
+                /*;
+                  .and()
+                    //配置退出
+                    .logout()
+                    //退出的地址
+                    .logoutUrl("/back_login/loginOut")
+                    //退出成功的地址
+                .logoutSuccessUrl("/back_login/login")
+                */
+
+
 
         // 权限配置
         /*     http.authorizeRequests()//http所有请求
@@ -100,16 +123,6 @@ import javax.annotation.Resource;
                 .and()
                 // 禁用csrf跨域请求
                 .csrf().disable();*/
-
-        // 配置退出
-       /*http.logout()
-                // 退出的地址
-                .logoutUrl("/back_login/logout")
-                // 退出成功的地址
-                .logoutSuccessUrl("/back/views/user/login.html");*/
-
-
-
     }
 
     //自动注入 自定义的认证生成器
@@ -132,9 +145,9 @@ import javax.annotation.Resource;
     @Override
     public void configure(WebSecurity web) throws Exception {
        web.ignoring().antMatchers(
-                // 忽略静态资源
+// 基础                 // 忽略静态资源
                 "/back/image/**","/css/**","/font/**","/image/**","/js/**","/layuiadmin/**","/picture/**","/style/**","/layui/**","/driving/**"
-                // 驾校后台模板,一帆驾校前台模板
+               // 驾校后台模板,一帆驾校前台模板
                 ,"/school/**","/treasure/**"
                // 后台模板
                ,"/back/views/index1.html"
@@ -143,14 +156,19 @@ import javax.annotation.Resource;
                 // 一帆驾校平台后台 注册,找回密码
                 ,"/back/views/user/reg.html","/back/views/user/forget.html",
 
-               // 驾校平台登录
-               "/school_login/**",
+
+//驾校后台     // 驾校平台登录
                //短信验证
-               "/sendSMS/**",
-               //图片上传
-               "/school_upload/**",
-               //菜单
-               "/school_modules/**"
+               "/sendSMS/**","/school_login/**",
+               //图片上传           驾校个人信息
+               "/school_upload/**","/school_information/**",
+               //菜单              学员信息
+               "/school_modules/**","/school_student/**",
+               //前台登陆注册     // 班型管理                 // 驾考类型管理C1
+               "/treasure_login/**", "/school_jx_classtype/**","/school_ex_model/**"
+
+//一帆驾校后台    // 角色管理 权限分配页面
+
                 );
     }
 

@@ -26,6 +26,7 @@ public class PermissionConfig {
     // 驾校后台 模块
     @Autowired
     ModulesService modulesService;
+
     /**
      * 判断是否拥有某一个权限
      * @param request
@@ -33,11 +34,11 @@ public class PermissionConfig {
      * @return
      */
     public boolean hasPermission(HttpServletRequest request, Authentication authentication){
+
         boolean flag=false;
         // 获取用户身份
         Object principal = authentication.getPrincipal();
-        System.out.println("principal:"+principal);
-        System.out.println("principal.getClass:"+principal.getClass());
+
         //判断是否认证成功
         if(principal instanceof UserDetails){
             // 认证已经通过
@@ -53,12 +54,10 @@ public class PermissionConfig {
             // 根据用户获取对应的权限
             Integer posId = (Integer) session.getAttribute("posId");
             List<String> permission = permissionService.findPermissionByPosId(posId);
-            System.out.println("根据职务编号查询的权限是："+permission);
-            System.out.println("根据职务编号查询的权限是==获取的路径"+request.getRequestURI());
+
 
             for (int i = 0; i <permission.size() ; i++) {
                 String per = permission.get(i);
-                System.out.println("per:"+per);
                 if(request.getRequestURI().equals(per)){
                     //代表有当前的权限
                     System.out.println("增删改查代表有当前的权限:"+per);
@@ -67,8 +66,6 @@ public class PermissionConfig {
                 }
             }
             List<String> urls = posModulesService.findUrlByPosId(posId);
-            System.out.println("查询的菜单路径是："+urls);
-            System.out.println("查询的菜单路径是:====>>>获取的路径"+request.getRequestURI());
             for (int i = 0; i <urls.size() ; i++) {
                 String url = urls.get(i);
                 System.out.println("urls:"+url);
@@ -83,7 +80,6 @@ public class PermissionConfig {
             List<String> moduleUrls = modulesService.findByModuleUrl();
             for (int i = 0; i <moduleUrls.size() ; i++) {
                 String moduleUrl = moduleUrls.get(i);
-                System.out.println("moduleUrls:"+moduleUrl);
                 if(request.getRequestURI().equals(moduleUrl)) {
                     //代表有当前的权限
                     System.out.println("驾校后台菜单代表有当前的权限:"+moduleUrl);
@@ -91,10 +87,13 @@ public class PermissionConfig {
                     break;
                 }
             }
-
+            System.out.println("flag4 ========== " + flag);
             return flag;
         }else{
             return false;
         }
+
+
     }
+
 }

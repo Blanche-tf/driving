@@ -27,6 +27,10 @@ public class Jx_coach {
     @Column
     private String tage;
 
+    //    0:在职 1:离职
+    @Column
+    private Integer state;
+
     //    教练简介
     @Column
     private String cDesc;

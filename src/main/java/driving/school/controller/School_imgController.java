@@ -9,7 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.File;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -22,22 +24,20 @@ public class School_imgController {
 
     @RequestMapping(value="/uploadMany" , method = RequestMethod.POST)
     @ResponseBody
-    public String uploadSource(@RequestParam("file") MultipartFile[] multipartFiles , HttpServletRequest request) {
+    public String uploadSource(@RequestParam("file") MultipartFile[] multipartFiles , HttpSession session) {
         //   System.out.println(file);
+        Map<String,Object> jobInfo =(Map<String,Object>) session.getAttribute("schoolLogin");
+        Integer uid = (Integer) jobInfo.get("uid");
         String pathString = null;
         for(MultipartFile m : multipartFiles){
             UUID uuid = UUID.randomUUID();
             pathString = "e:/driving/" + uuid + "_" +m.getOriginalFilename();
             try {
                 File files=new File(pathString);
-                //System.out.println("files = " + files);
-                //打印查看上传路径
-                //System.out.println("pathString"+pathString);
                 String imgName = pathString.substring(11);
-                //System.out.println("imgName = " + imgName);
                 Jx_ambient jx_ambient =new Jx_ambient();
                 jx_ambient.setaImg(imgName);
-                jx_ambient.setUid(1);
+                jx_ambient.setUid(uid);
                 schoolimgService.schoolimgAdd(jx_ambient);
 
                 if(!files.getParentFile().exists()){

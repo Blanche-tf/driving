@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>部门修改</title>
+    <!--layu样式-->
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <script src="/layuiadmin/layui/layui.js"></script>
+    <!--jquery-->
+    <script src="/js/jquery-3.1.1.js"></script>
+
+    <script type="text/javascript">
+        layui.use(['form','layer'], function() {
+            var form = layui.form;
+            //监听提交
+            form.on('submit(submitBtn)', function (data) {
+                var param = data.field;//定义临时变量获取表单提交过来的数据，非json格式
+                $.ajax({
+                    url: "/back_ex_model/update",
+                    type: 'post',//method请求方式，get或者post
+                    dataType: 'json',//预期服务器返回的数据类型
+                    data: param,//表格数据序列化
+                    success: function (res) {//res为相应体,function为回调函数
+                        if (res == 1) {
+                            layer.msg('操作成功',{icon: 6, time: 5000});
+                            parent.layui.table.reload('ex_modelReload');//重载父页表格，参数为表格ID
+                            setTimeout('window.parent.layer.closeAll()',1000)//设置关闭子窗体的时间
+                        } else {
+                            layer.msg(res.error);
+                        }
+                    }
+                });
+                return false;
+            });
+        })
+    </script>
+</head>
+<body>
+
+<div style="margin-top: 20px;margin-left: 25px">
+    <form class="layui-form" id="posForm" lay-filter="ex_model">
+        <div class="layui-form-item">
+            <label class="layui-form-label">部门名称</label>
+            <div class="layui-input-block">
+                <input id="mid" type="text" style="width: 220px;" name="mid" lay-verify="mid"
+                       autocomplete="off" required class="layui-input"
+                       th:value="${ex_model.mid}"  readonly="readonly"
+                >
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">部门名称</label>
+            <div class="layui-input-block">
+                <input id="model" type="text" style="width: 220px;" name="model" lay-verify="model"
+                       autocomplete="off" required class="layui-input"
+                       th:value="${ex_model.model}"
+                >
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="submitBtn">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+</body>
+</html>

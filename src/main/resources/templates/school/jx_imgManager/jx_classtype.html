@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <title>班型管理</title>
+
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <script src="/layuiadmin/layui/layui.js"></script>
+    <script src="/js/jquery-3.1.1.js"></script>
+    <script type="text/javascript"></script>
+
+    <script type="text/javascript">
+        //使用表格
+        layui.use('table', function () {
+            var table = layui.table;
+            table.render({
+                elem: '#jx_classtype',
+                id: 'jx_classtypeReload',
+                height: 450,
+                url: '/school_jx_classtype/findAll',
+                cellMinWidth: 80,
+                page: true,
+                toolbar: "#toolbarTop",
+                cols: [[
+                    {field: 'cid', title: '编号', align: 'center'},
+                    {field: 'cname', title: '课程名称', align: 'center'},
+                    {field: 'mid', title: '驾照类型', align: 'center',templet:function (d){
+                        var model = "";
+                        switch (d.mid) {
+                            case 1:
+                                model = "C1";
+                                break;
+                            case 2:
+                                model = "C2";
+                                break;
+                            case 3:
+                                model = "B1";
+                                break;
+                            case 4:
+                                model = "B2";
+                                break;
+                            case 5:
+                                model = "A1";
+                                break;
+                            case 6:
+                                model = "A2";
+                                break;
+                        }
+                            return model;
+                        } },
+                    {field: 'money', title: '班型费用', align: 'center',templet:function (d){
+                        return "￥"+d.money;
+                        } },
+                    {field: 'ctime', title: '学车时间', align: 'center'},
+                    {field: 'people', title: '几人一车', align: 'center',templet:function (d){
+                            return d.people+"人";
+                        }},
+                    {field: 'cdesc', title: '班型描述', align: 'center'},
+                    // {field: 'uid', title: '所属驾校', align: 'center'},
+                    {fixed: 'right', title: '操作', width: 200, align: 'center', toolbar: '#toolbarInner'}
+                ]],
+                dataType: 'json'
+            });
+
+
+            //表格重载
+            var $ = layui.$, active = {
+                reload: function(){
+                    var name = $('#name').val();
+                    //执行重载,重新起的新的id
+                    table.reload('jx_classtypeReload', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        ,where: {
+                            name : name
+                        }
+                    });
+                }
+            };
+            $('#searchBtn').on('click', function(){
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+
+            table.on('toolbar(sj)', function(obj){
+                $.ajax({
+                    url: '/school/jx_imgManager/jx_classtypeadd.html',
+                    success:function(){
+                        layer.open({
+                            title:'添加考试类型'
+                            ,id:'add'
+                            ,type: 2
+                            ,content:'/school/jx_imgManager/jx_classtypeadd.html'
+                            ,offset:'10px'//居上100左右居中
+                            ,resize:false//不可改变大小
+                            ,fixed: false//鼠标滚动时，固定在可视区域
+                            ,btn: '关闭'
+                            ,btnAlign: 'c' //按钮居中
+                            ,shade: 0.3 //遮罩
+                            ,area:['500px','500px']
+                        });
+                    },
+                    error:function(XMLHttpRequest){
+                        if (XMLHttpRequest.status==403){
+                            layer.msg('对不起，你没有该权限', {icon: 5});
+                        }
+                    }
+                })
+            });
+
+
+
+            var urls;
+            //监听行工具事件
+            table.on('tool(sj)', function(obj){
+                var data = obj.data;
+                var event = obj.event;
+                if (event == "upd"){
+                    urls ='/school_jx_classtype/updateShow?cId='+data.cid
+                    $.ajax({
+                        url:urls,
+                        success:function(){
+                            layer.open({
+                                title:'修改班型信息'
+                                ,id:'upd'
+                                ,type: 2
+                                ,content: '/school_jx_classtype/updateShow?cId='+data.cid
+                                ,offset:'10px'//居上100左右居中
+                                ,resize:false//不可改变大小
+                                ,fixed: false//鼠标滚动时，固定在可视区域
+                                ,btn: '关闭'
+                                ,btnAlign: 'c' //按钮居中
+                                ,shade: 0.3 //遮罩
+                                ,area:['500px','600px']
+                            });
+                        },
+                        error:function(XMLHttpRequest){
+                            if (XMLHttpRequest.status==403){
+                                layer.msg('对不起，你没有该权限', {icon: 5});
+                            }
+                        }
+                    })
+                }
+                if (event == "del"){
+                    layer.confirm('真的要删除吗？', function (index) {
+                        layer.close(index);
+                        $.ajax({
+                            type: 'post',
+                            url: '/school_jx_classtype/delete',
+                            dataType: 'json',
+                            data:{cId:data.cid},
+                            success: function (res) {
+                                if (res == 1) {
+                                    layer.msg('删除成功', {icon: 1, time: 5000});
+                                    table.reload("jx_classtypeReload")
+                                }
+                            },error: function (XMLHttpRequest) {
+                                if (XMLHttpRequest.status == 403) {
+                                    layer.msg('对不起，你没有该权限', {icon: 5});
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+        })
+    </script>
+</head>
+<body>
+
+
+
+
+<div class="demoTable" style="margin-top: 15px;margin-left: 20px;" >
+    搜索条件(课程名称)
+    <div class="layui-inline" >
+        <input class="layui-input" id="name" autocomplete="off">
+    </div>
+    <button  class="layui-btn" id="searchBtn" data-type="reload"><i class="layui-icon">&#xe615;</i>搜索</button>
+</div>
+
+
+
+<table class="layui-hide" lay-filter="sj" id="jx_classtype">
+</table>
+
+
+
+<script type="text/html" id="toolbarTop" >
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe654;</i>添添加班型信息</button>
+    </div>
+</script>
+
+
+
+
+<!-- 行内按钮组件 -->
+<script type="text/html" id="toolbarInner" >
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="upd"><i class="layui-icon">&#xe642;</i>修改班型</button>
+
+        <button class="layui-btn layui-btn-sm layui-btn-danger "  lay-event="del"><i class="layui-icon"></i> 删除班型</button>
+    </div>
+</script>
+
+
+</body>
+</html>
